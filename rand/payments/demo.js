@@ -266,7 +266,7 @@ function completePayment(instrument, result, msg) {
 function redirectToPlayStore() {
   if (confirm('Tez not installed, go to play store and install?')) {
     window.location.href =
-        'https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user.alpha'
+        'https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user&hl=en_IN'
   };
 }
 
