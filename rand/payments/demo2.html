@@ -1,193 +1,176 @@
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="Sample illustrating the use of PaymentRequest Contact Info.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <title>PaymentRequest Contact Info Sample</title>
-    <script>
-      // Add a global error event listener early on in the page load, to help ensure that browsers
-      // which don't support specific functionality still end up displaying a meaningful message.
-      window.addEventListener('error', function(error) {
-        if (ChromeSamples && ChromeSamples.setStatus) {
-          console.error(error);
-          ChromeSamples.setStatus(error.message + ' (Your browser may not support this feature.)');
-          error.preventDefault();
-        }
-      });
-    </script>
-    
-    
-    
-    <link rel="icon" href="../../images/favicon.ico">
-    
-    <link rel="stylesheet" href="../../styles/main.css">
-    
-    
-  </head>
-
-  <body>
-    
-<p>
-  This sample accepts credit card payments and requests payer's contact
-  information: name, phone number, and email address.
-</p>
-
-
-<script>
-  var ChromeSamples = {
-    log: function() {
-      var line = Array.prototype.slice.call(arguments).map(function(argument) {
-        return typeof argument === 'string' ? argument : JSON.stringify(argument);
-      }).join(' ');
-
-      document.querySelector('#log').textContent += line + '\n';
-    },
-
-    clearLog: function() {
-      document.querySelector('#log').textContent = '';
-    },
-
-    setStatus: function(status) {
-      document.querySelector('#status').textContent = status;
-    },
-
-    setContent: function(newContent) {
-      var content = document.querySelector('#content');
-      while(content.hasChildNodes()) {
-        content.removeChild(content.lastChild);
-      }
-      content.appendChild(newContent);
-    }
-  };
-</script>
-
-<h3>Live Output</h3>
-<div id="output" class="output">
-  <div id="content">
-<div><button id="buyButton">Buy</button></div>
-<div><pre id="result"></pre></div>
-</div>
-  <div id="status"></div>
-  <pre id="log"></pre>
-</div>
-
-
-
-
-
-  
-    
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="description" content="Sample illustrating the use of PaymentRequest Contact Info.">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>PaymentRequest Contact Info Sample</title>
+      <script>
+         // Add a global error event listener early on in the page load, to help ensure that browsers
+         // which don't support specific functionality still end up displaying a meaningful message.
+         window.addEventListener('error', function(error) {
+           if (ChromeSamples && ChromeSamples.setStatus) {
+             console.error(error);
+             ChromeSamples.setStatus(error.message + ' (Your browser may not support this feature.)');
+             error.preventDefault();
+           }
+         });
+      </script>
+      <link rel="icon" href="../../images/favicon.ico">
+      <link rel="stylesheet" href="../../styles/main.css">
+   </head>
+   <body>
+      <p>
+         This sample accepts credit card payments and requests payer's contact
+         information: name, phone number, and email address.
+         <a href="https://developers.google.com/web/fundamentals/payments/" target="_blank">More details</a>
+      </p>
+      <script>
+         var ChromeSamples = {
+           log: function() {
+             var line = Array.prototype.slice.call(arguments).map(function(argument) {
+               return typeof argument === 'string' ? argument : JSON.stringify(argument);
+             }).join(' ');
+         
+             document.querySelector('#log').textContent += line + '\n';
+           },
+         
+           clearLog: function() {
+             document.querySelector('#log').textContent = '';
+           },
+         
+           setStatus: function(status) {
+             document.querySelector('#status').textContent = status;
+           },
+         
+           setContent: function(newContent) {
+             var content = document.querySelector('#content');
+             while(content.hasChildNodes()) {
+               content.removeChild(content.lastChild);
+             }
+             content.appendChild(newContent);
+           }
+         };
+      </script>
+      <h3>Live Output</h3>
+      <div id="output" class="output">
+         <div id="content">
+            <div><button id="buyButton">Buy</button></div>
+            <div>
+               <pre id="result"></pre>
+            </div>
+         </div>
+         <div id="status"></div>
+         <pre id="log"></pre>
+      </div>
       <script>/**
- * Builds PaymentRequest that also gathers user's contact information, but does
- * not show any UI yet.
- *
- * @return {PaymentRequest} The PaymentRequest object.
- */
-function initPaymentRequest() {
-  let networks = ['amex', 'diners', 'discover', 'jcb', 'mastercard', 'unionpay',
-      'visa', 'mir'];
-  let types = ['debit', 'credit', 'prepaid'];
-  let supportedInstruments = [{
-    supportedMethods: 'basic-card',
-    data: {supportedNetworks: networks, supportedTypes: types},
-  }];
-
-  let details = {
-    total: {label: 'Donation', amount: {currency: 'USD', value: '55.00'}},
-    displayItems: [
-      {
-        label: 'Original donation amount',
-        amount: {currency: 'USD', value: '65.00'},
-      },
-      {
-        label: 'Friends and family discount',
-        amount: {currency: 'USD', value: '-10.00'},
-      },
-    ],
-  };
-
-  let options = {
-    requestPayerName: true,
-    requestPayerPhone: true,
-    requestPayerEmail: true,
-  };
-
-  return new PaymentRequest(supportedInstruments, details, options);
-}
-
-/**
- * Invokes PaymentRequest that also gathers user's contact information.
- *
- * @param {PaymentRequest} request The PaymentRequest object.
- */
-function onBuyClicked(request) {
-  request.show().then(function(instrumentResponse) {
-    sendPaymentToServer(instrumentResponse);
-  })
-  .catch(function(err) {
-    ChromeSamples.setStatus(err);
-  });
-}
-
-/**
- * Simulates processing the payment data on the server.
- *
- * @private
- * @param {PaymentResponse} instrumentResponse The payment information to
- * process.
- */
-function sendPaymentToServer(instrumentResponse) {
-  // There's no server-side component of these samples. No transactions are
-  // processed and no money exchanged hands. Instantaneous transactions are not
-  // realistic. Add a 2 second delay to make it seem more real.
-  window.setTimeout(function() {
-    instrumentResponse.complete('success')
-        .then(function() {
-          document.getElementById('result').innerHTML =
-              instrumentToJsonString(instrumentResponse);
-        })
-        .catch(function(err) {
-          ChromeSamples.setStatus(err);
-        });
-  }, 2000);
-}
-
-/**
- * Converts the payment instrument into a JSON string.
- *
- * @private
- * @param {PaymentResponse} instrument The instrument to convert.
- * @return {string} The JSON string representation of the instrument.
- */
-function instrumentToJsonString(instrument) {
-  let details = instrument.details;
-  details.cardNumber = 'XXXX-XXXX-XXXX-' + details.cardNumber.substr(12);
-  details.cardSecurityCode = '***';
-
-  return JSON.stringify({
-    methodName: instrument.methodName,
-    details: details,
-    payerName: instrument.payerName,
-    payerPhone: instrument.payerPhone,
-    payerEmail: instrument.payerEmail,
-  }, undefined, 2);
-}
-
-const payButton = document.getElementById('buyButton');
-payButton.setAttribute('style', 'display: none;');
-if (window.PaymentRequest) {
-  let request = initPaymentRequest();
-  payButton.setAttribute('style', 'display: inline;');
-  payButton.addEventListener('click', function() {
-    onBuyClicked(request);
-    request = initPaymentRequest();
-  });
-} else {
-  ChromeSamples.setStatus('This browser does not support web payments');
-}
-</script>
-    
-  </body>
+         * Builds PaymentRequest that also gathers user's contact information, but does
+         * not show any UI yet.
+         *
+         * @return {PaymentRequest} The PaymentRequest object.
+         */
+         function initPaymentRequest() {
+          let networks = ['amex', 'diners', 'discover', 'jcb', 'mastercard', 'unionpay',
+              'visa', 'mir'];
+          let types = ['debit', 'credit', 'prepaid'];
+          let supportedInstruments = [{
+            supportedMethods: 'basic-card',
+            data: {supportedNetworks: networks, supportedTypes: types},
+          }];
+         
+          let details = {
+            total: {label: 'Donation', amount: {currency: 'USD', value: '55.00'}},
+            displayItems: [
+              {
+                label: 'Original donation amount',
+                amount: {currency: 'USD', value: '65.00'},
+              },
+              {
+                label: 'Friends and family discount',
+                amount: {currency: 'USD', value: '-10.00'},
+              },
+            ],
+          };
+         
+          let options = {
+            requestPayerName: true,
+            requestPayerPhone: true,
+            requestPayerEmail: true,
+          };
+         
+          return new PaymentRequest(supportedInstruments, details, options);
+         }
+         
+         /**
+         * Invokes PaymentRequest that also gathers user's contact information.
+         *
+         * @param {PaymentRequest} request The PaymentRequest object.
+         */
+         function onBuyClicked(request) {
+          request.show().then(function(instrumentResponse) {
+            sendPaymentToServer(instrumentResponse);
+          })
+          .catch(function(err) {
+            ChromeSamples.setStatus(err);
+          });
+         }
+         
+         /**
+         * Simulates processing the payment data on the server.
+         *
+         * @private
+         * @param {PaymentResponse} instrumentResponse The payment information to
+         * process.
+         */
+         function sendPaymentToServer(instrumentResponse) {
+          // There's no server-side component of these samples. No transactions are
+          // processed and no money exchanged hands. Instantaneous transactions are not
+          // realistic. Add a 2 second delay to make it seem more real.
+          window.setTimeout(function() {
+            instrumentResponse.complete('success')
+                .then(function() {
+                  document.getElementById('result').innerHTML =
+                      instrumentToJsonString(instrumentResponse);
+                })
+                .catch(function(err) {
+                  ChromeSamples.setStatus(err);
+                });
+          }, 2000);
+         }
+         
+         /**
+         * Converts the payment instrument into a JSON string.
+         *
+         * @private
+         * @param {PaymentResponse} instrument The instrument to convert.
+         * @return {string} The JSON string representation of the instrument.
+         */
+         function instrumentToJsonString(instrument) {
+          let details = instrument.details;
+          details.cardNumber = 'XXXX-XXXX-XXXX-' + details.cardNumber.substr(12);
+          details.cardSecurityCode = '***';
+         
+          return JSON.stringify({
+            methodName: instrument.methodName,
+            details: details,
+            payerName: instrument.payerName,
+            payerPhone: instrument.payerPhone,
+            payerEmail: instrument.payerEmail,
+          }, undefined, 2);
+         }
+         
+         const payButton = document.getElementById('buyButton');
+         payButton.setAttribute('style', 'display: none;');
+         if (window.PaymentRequest) {
+          let request = initPaymentRequest();
+          payButton.setAttribute('style', 'display: inline;');
+          payButton.addEventListener('click', function() {
+            onBuyClicked(request);
+            request = initPaymentRequest();
+          });
+         } else {
+          ChromeSamples.setStatus('This browser does not support web payments');
+         }
+      </script>
+   </body>
 </html>
