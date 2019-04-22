@@ -79,9 +79,10 @@
     </div>
 
     <div id="actionSection">
-        <div class="form-horizontal">            
+        <div class="form-horizontal">
+            <label id="copied" style="display:none;">Copied!</label>            
             <button class="btn btn-info pull-right" onclick="onCopyClicked()">Copy</button>        
-            <button class="btn btn-info pull-right" onclick="onGenerateClicked()">Buy</button>            
+            <button class="btn btn-info pull-right" onclick="onGenerateClicked()">Pay</button>            
         </div>
     </div>
     
@@ -102,7 +103,15 @@
             document.execCommand("copy");
 
             /* Alert the copied text */
-            alert("Copied the text: " + copyText.value);
+            
+
+            setTimeout(function(){
+                $('#copied').fadeIn();
+            }, 100);
+
+            setTimeout(function(){
+                $('#copied').fadeOut();
+            }, 650);
         }
 
         function readUpiFields() {
